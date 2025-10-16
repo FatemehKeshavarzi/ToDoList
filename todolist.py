@@ -16,7 +16,7 @@ class ToDoError(Exception):
 class Task:
     title: str
     description: Optional[str] = ''
-    status: str = 'todo'  # allowed: todo | doing | done
+    status: str = 'todo'  
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
     deadline: str = ''
 
