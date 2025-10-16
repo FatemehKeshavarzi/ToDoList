@@ -1,7 +1,11 @@
 import sys
+import os
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
+
+MAX_NUMBER_OF_PROJECTS = int(os.getenv('MAX_NUMBER_OF_PROJECTS', 10))
+MAX_NUMBER_OF_TASKS_PER_PROJECT = int(os.getenv('MAX_NUMBER_OF_TASKS_PER_PROJECT', 50))
 
 # ---- Exceptions ----
 class ToDoError(Exception):
@@ -29,6 +33,8 @@ class Project:
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
     def add_task(self, task: Task):
+        if len(self.tasks) >= MAX_NUMBER_OF_TASKS_PER_PROJECT:
+            raise ToDoError(f"Maximum tasks per project: {MAX_NUMBER_OF_TASKS_PER_PROJECT}")
         if any(t.title == task.title for t in self.tasks):
             raise ToDoError("Task title already exists in this project.")
         self.tasks.append(task)
@@ -55,6 +61,8 @@ class ProjectManager:
     def create_project(self, name: str, description: str = '') -> Project:
         if not name or not name.strip():
             raise ToDoError("Project name cannot be empty.")
+        if len(self.projects) >= MAX_NUMBER_OF_PROJECTS:
+            raise ToDoError(f"Maximum number of projects: {MAX_NUMBER_OF_PROJECTS}")
         if name in self.projects:
             raise ToDoError("Project name already exists.")
         proj = Project(name=name, description=description)
