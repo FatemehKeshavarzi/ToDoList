@@ -44,4 +44,52 @@ class Project:
         for t in self.tasks:
             if t.title == task_title:
                 return t
-        raise ToDoError("Task not found.")        
+        raise ToDoError("Task not found.") 
+    
+# ---- Project Manager ----
+class ProjectManager:
+    def __init__(self):
+        self.projects: Dict[str, Project] = {}
+
+    # --- Project operations ---
+    def create_project(self, name: str, description: str = '') -> Project:
+        if not name or not name.strip():
+            raise ToDoError("Project name cannot be empty.")
+        if name in self.projects:
+            raise ToDoError("Project name already exists.")
+        proj = Project(name=name, description=description)
+        self.projects[name] = proj
+        return proj
+
+    def delete_project(self, name: str):
+        if name not in self.projects:
+            raise ToDoError("Project not found.")
+        del self.projects[name]  # cascade delete
+
+    def list_projects(self) -> List[Project]:
+        return list(self.projects.values())
+
+    def get_project(self, name: str) -> Project:
+        if name not in self.projects:
+            raise ToDoError("Project not found.")
+        return self.projects[name]
+
+    def update_project(self, current_name: str, new_name: Optional[str] = None, new_description: Optional[str] = None):
+        if current_name not in self.projects:
+            raise ToDoError("Project not found.")
+        proj = self.projects[current_name]
+
+        if new_name is not None:
+            clean_new = new_name.strip()
+            if not clean_new:
+                raise ToDoError("New project name cannot be empty.")
+            if clean_new != current_name and clean_new in self.projects:
+                raise ToDoError("Another project with the new name already exists.")
+            if clean_new != current_name:
+                proj.name = clean_new
+                self.projects[clean_new] = proj
+                del self.projects[current_name]
+
+        if new_description is not None:
+            proj.description = new_description
+           
