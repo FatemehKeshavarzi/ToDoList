@@ -20,3 +20,28 @@ class Task:
         if new_status not in ('todo', 'doing', 'done'):
             raise ToDoError("Invalid status. Must be todo|doing|done.")
         self.status = new_status
+        
+@dataclass
+class Project:
+    name: str
+    description: Optional[str] = ''
+    tasks: List[Task] = field(default_factory=list)
+    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+
+    def add_task(self, task: Task):
+        if any(t.title == task.title for t in self.tasks):
+            raise ToDoError("Task title already exists in this project.")
+        self.tasks.append(task)
+
+    def remove_task(self, task_title: str):
+        for i, t in enumerate(self.tasks):
+            if t.title == task_title:
+                del self.tasks[i]
+                return
+        raise ToDoError("Task not found.")
+
+    def get_task(self, task_title: str) -> Task:
+        for t in self.tasks:
+            if t.title == task_title:
+                return t
+        raise ToDoError("Task not found.")        
