@@ -3,8 +3,12 @@ import os
 from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
+from dotenv import load_dotenv
 
+load_dotenv() 
 
+MAX_NUMBER_OF_PROJECTS = int(os.getenv('MAX_NUMBER_OF_PROJECTS'))
+MAX_NUMBER_OF_TASKS_PER_PROJECT = int(os.getenv('MAX_NUMBER_OF_TASKS_PER_PROJECT'))
 
 # ---- Exceptions ----
 class ToDoError(Exception):
